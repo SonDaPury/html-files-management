@@ -2,6 +2,15 @@
 REM HTML File Manager - Windows Build Script
 setlocal enabledelayedexpansion
 
+REM Cleanup function for errors
+:cleanup_on_error
+echo %ERROR% Build that bai! Don dep build artifacts...
+if exist "dist" rmdir /s /q "dist" 2>nul
+if exist "release" rmdir /s /q "release" 2>nul
+del /q resources\*.iconset 2>nul
+echo %ERROR% Build artifacts da duoc xoa do loi build.
+goto :eof
+
 echo ========================================
 echo  HTML FILE MANAGER - BUILD SCRIPT
 echo ========================================
@@ -93,7 +102,8 @@ REM Build the application
 echo %INFO% Building application...
 call npm run build
 if errorlevel 1 (
-    echo %ERROR% Build that bai
+    echo %ERROR% Source build that bai!
+    call :cleanup_on_error
     pause
     exit /b 1
 )
@@ -107,18 +117,36 @@ echo %INFO% Tao distributables cho platform: %platform%
 
 if /i "%platform%"=="mac" (
     call npm run dist:mac
+    if errorlevel 1 (
+        echo %ERROR% Tao distributables that bai cho platform: %platform%
+        call :cleanup_on_error
+        pause
+        exit /b 1
+    )
 ) else if /i "%platform%"=="linux" (
-    call npm run dist:linux  
+    call npm run dist:linux
+    if errorlevel 1 (
+        echo %ERROR% Tao distributables that bai cho platform: %platform%
+        call :cleanup_on_error
+        pause
+        exit /b 1
+    )
 ) else if /i "%platform%"=="all" (
     call npm run dist:all
+    if errorlevel 1 (
+        echo %ERROR% Tao distributables that bai cho platform: %platform%
+        call :cleanup_on_error
+        pause
+        exit /b 1
+    )
 ) else (
     call npm run dist:win
-)
-
-if errorlevel 1 (
-    echo %ERROR% Tao distributables that bai
-    pause
-    exit /b 1
+    if errorlevel 1 (
+        echo %ERROR% Tao distributables that bai cho platform: %platform%
+        call :cleanup_on_error
+        pause
+        exit /b 1
+    )
 )
 
 echo ========================================

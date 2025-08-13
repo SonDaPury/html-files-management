@@ -11,6 +11,8 @@ NODE_MODULES := node_modules
 DIST_DIR := dist
 RELEASE_DIR := release
 
+# Error cleanup - simplified approach
+
 # Colors
 BLUE := \033[0;34m
 GREEN := \033[0;32m
@@ -40,7 +42,7 @@ dev: ## Run development server
 .PHONY: build
 build: ## Build source code only
 	@echo -e "$(BLUE)🔨 Building source code...$(NC)"
-	npm run build
+	@npm run build || { echo -e "$(RED)❌ Source build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 	@echo -e "$(GREEN)✅ Source code build hoàn tất$(NC)"
 
 ##@ Build Commands
@@ -48,27 +50,27 @@ build: ## Build source code only
 .PHONY: build-app
 build-app: ## Build app for current platform with auto icon generation
 	@echo -e "$(BLUE)🏗️  Building app cho platform hiện tại...$(NC)"
-	$(BUILD_SCRIPT)
+	@$(BUILD_SCRIPT) || { echo -e "$(RED)❌ Build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 
 .PHONY: build-mac
 build-mac: ## Build app for macOS
 	@echo -e "$(BLUE)🍎 Building app cho macOS...$(NC)"
-	$(BUILD_SCRIPT) mac
+	@$(BUILD_SCRIPT) mac || { echo -e "$(RED)❌ Build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 
 .PHONY: build-win
 build-win: ## Build app for Windows
 	@echo -e "$(BLUE)🪟 Building app cho Windows...$(NC)"
-	$(BUILD_SCRIPT) win
+	@$(BUILD_SCRIPT) win || { echo -e "$(RED)❌ Build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 
 .PHONY: build-linux
 build-linux: ## Build app for Linux
 	@echo -e "$(BLUE)🐧 Building app cho Linux...$(NC)"
-	$(BUILD_SCRIPT) linux
+	@$(BUILD_SCRIPT) linux || { echo -e "$(RED)❌ Build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 
 .PHONY: build-all
 build-all: ## Build app for all platforms
 	@echo -e "$(BLUE)🌍 Building app cho tất cả platforms...$(NC)"
-	$(BUILD_SCRIPT) all
+	@$(BUILD_SCRIPT) all || { echo -e "$(RED)❌ Build thất bại!$(NC)"; rm -rf $(DIST_DIR) $(RELEASE_DIR) resources/*.iconset 2>/dev/null || true; exit 1; }
 
 ##@ Icon Commands
 

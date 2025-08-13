@@ -5,6 +5,22 @@
 
 set -e  # Exit on any error
 
+# Cleanup function to run on script exit or error
+cleanup_on_error() {
+    local exit_code=$?
+    # Only cleanup on actual errors (not warnings from Vite deprecation)
+    if [ $exit_code -ne 0 ] && [ $exit_code -ne 130 ]; then
+        print_error "Build thất bại! Dọn dẹp build artifacts..."
+        rm -rf dist/ 2>/dev/null || true
+        rm -rf release/ 2>/dev/null || true
+        rm -rf resources/*.iconset 2>/dev/null || true
+        print_error "Build artifacts đã được xóa do lỗi build."
+    fi
+}
+
+# Set trap to call cleanup function on script exit - disabled for now
+# trap cleanup_on_error EXIT
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -98,30 +114,47 @@ check_dependencies() {
 create_default_icon() {
     print_status "Tạo icon mặc định..."
     
-    # Create a simple SVG icon
+    # Create a simple SVG icon with proper dimensions
     cat > "$RESOURCES_DIR/icon.svg" << 'EOF'
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#2563eb"/>
-  <path d="M128 128h256v64H128zm0 96h256v32H128zm0 64h192v32H128zm0 64h256v32H128z" fill="white"/>
-  <circle cx="384" cy="384" r="48" fill="#fbbf24"/>
-  <path d="M384 352l-16 16h32z" fill="#2563eb"/>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="128" fill="url(#bg)"/>
+  <rect x="128" y="128" width="768" height="768" rx="64" fill="#ffffff" fill-opacity="0.1"/>
+  <path d="M256 256h512v128H256zm0 192h512v64H256zm0 128h384v64H256zm0 128h512v64H256z" fill="white"/>
+  <circle cx="768" cy="768" r="96" fill="#fbbf24"/>
+  <path d="M768 704l-32 32h64z" fill="#2563eb"/>
+  <text x="512" y="900" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">HTML</text>
 </svg>
 EOF
 
-    # Convert SVG to PNG using built-in tools or fallback
+    # Convert SVG to high-quality PNG
     if command_exists rsvg-convert; then
-        rsvg-convert -w 512 -h 512 "$RESOURCES_DIR/icon.svg" > "$RESOURCES_DIR/icon.png"
+        rsvg-convert -w 1024 -h 1024 "$RESOURCES_DIR/icon.svg" > "$RESOURCES_DIR/icon.png"
+        print_success "Icon mặc định đã được tạo với rsvg-convert"
     elif command_exists convert; then
-        convert -background none "$RESOURCES_DIR/icon.svg" -resize 512x512 "$RESOURCES_DIR/icon.png"
+        convert -background none "$RESOURCES_DIR/icon.svg" -resize 1024x1024 "$RESOURCES_DIR/icon.png"
+        print_success "Icon mặc định đã được tạo với ImageMagick"
+    elif command_exists inkscape; then
+        inkscape "$RESOURCES_DIR/icon.svg" -w 1024 -h 1024 -o "$RESOURCES_DIR/icon.png" 2>/dev/null || true
+        print_success "Icon mặc định đã được tạo với Inkscape"
     else
-        # Fallback: Create a simple colored square PNG using ImageMagick alternative
-        if command_exists sips; then
-            # macOS has sips
-            sips -s format png -z 512 512 "$RESOURCES_DIR/icon.svg" --out "$RESOURCES_DIR/icon.png" 2>/dev/null || true
+        # Fallback: Create a simple PNG using macOS sips if available
+        if [ "$OS" = "mac" ] && command_exists sips; then
+            sips -s format png -z 1024 1024 "$RESOURCES_DIR/icon.svg" --out "$RESOURCES_DIR/icon.png" 2>/dev/null || true
+            print_success "Icon mặc định đã được tạo với sips"
+        else
+            print_warning "Không thể tạo icon PNG. Vui lòng cài đặt ImageMagick, rsvg-convert, hoặc Inkscape"
+            print_warning "Hoặc thêm file icon.png (1024x1024) vào thư mục resources/"
         fi
     fi
     
-    print_success "Icon mặc định đã được tạo"
+    # Clean up SVG file
+    rm -f "$RESOURCES_DIR/icon.svg"
 }
 
 # Generate icons for all platforms
@@ -172,20 +205,35 @@ generate_icons() {
     # Generate Windows icon (.ico)
     if command_exists convert; then
         print_status "Tạo Windows icon (.ico)..."
-        convert "$SOURCE_ICON" -resize 256x256 \
+        # Create a high-quality Windows icon with multiple sizes, starting from 512x512
+        convert "$SOURCE_ICON" -resize 512x512 \
                \( -clone 0 -resize 16x16 \) \
+               \( -clone 0 -resize 24x24 \) \
                \( -clone 0 -resize 32x32 \) \
                \( -clone 0 -resize 48x48 \) \
                \( -clone 0 -resize 64x64 \) \
+               \( -clone 0 -resize 96x96 \) \
                \( -clone 0 -resize 128x128 \) \
+               \( -clone 0 -resize 256x256 \) \
+               \( -clone 0 -resize 512x512 \) \
                -delete 0 "$RESOURCES_DIR/icon.ico" 2>/dev/null || {
-            # Fallback: simple conversion
-            convert "$SOURCE_ICON" -resize 256x256 "$RESOURCES_DIR/icon.ico"
+            # Fallback: ensure minimum 256x256
+            print_status "Sử dụng fallback conversion cho Windows icon..."
+            convert "$SOURCE_ICON" -resize 512x512 -background transparent -gravity center -extent 512x512 "$RESOURCES_DIR/icon.ico"
         }
         print_success "Windows icon (.ico) đã được tạo"
     elif [ "$OS" = "mac" ] && command_exists sips; then
-        # macOS fallback
-        sips -s format ico "$SOURCE_ICON" --out "$RESOURCES_DIR/icon.ico" 2>/dev/null || true
+        # macOS fallback - ensure minimum size
+        print_status "Tạo Windows icon (.ico) với sips..."
+        # First resize to ensure minimum 512x512
+        sips -z 512 512 "$SOURCE_ICON" --out "$RESOURCES_DIR/temp_512.png" 2>/dev/null || true
+        if [ -f "$RESOURCES_DIR/temp_512.png" ]; then
+            sips -s format ico "$RESOURCES_DIR/temp_512.png" --out "$RESOURCES_DIR/icon.ico" 2>/dev/null || true
+            rm -f "$RESOURCES_DIR/temp_512.png"
+        else
+            sips -s format ico "$SOURCE_ICON" --out "$RESOURCES_DIR/icon.ico" 2>/dev/null || true
+        fi
+        print_success "Windows icon (.ico) đã được tạo"
     fi
     
     print_success "Icons đã được tạo cho tất cả platforms"
@@ -203,8 +251,11 @@ clean_build() {
 build_app() {
     print_status "Building application..."
     
-    # Run the build process
-    npm run build
+    # Run the build process with error handling
+    if ! npm run build; then
+        print_error "Source build thất bại!"
+        return 1
+    fi
     
     print_success "Application build hoàn tất"
 }
@@ -215,39 +266,47 @@ create_distributables() {
     
     print_status "Tạo distributables cho platform: $platform"
     
+    local build_command=""
+    
     case $platform in
         "mac"|"darwin")
-            npm run dist:mac
+            build_command="npm run dist:mac"
             ;;
         "win"|"windows")
-            npm run dist:win
+            build_command="npm run dist:win"
             ;;
         "linux")
-            npm run dist:linux
+            build_command="npm run dist:linux"
             ;;
         "all")
-            npm run dist:all
+            build_command="npm run dist:all"
             ;;
         *)
             # Auto-detect current platform
             OS=$(detect_os)
             case $OS in
                 "mac")
-                    npm run dist:mac
+                    build_command="npm run dist:mac"
                     ;;
                 "linux")
-                    npm run dist:linux
+                    build_command="npm run dist:linux"
                     ;;
                 "windows")
-                    npm run dist:win
+                    build_command="npm run dist:win"
                     ;;
                 *)
                     print_warning "Platform không được nhận diện. Build cho tất cả platforms..."
-                    npm run dist:all
+                    build_command="npm run dist:all"
                     ;;
             esac
             ;;
     esac
+    
+    # Execute build command with error handling
+    if ! eval "$build_command"; then
+        print_error "Tạo distributables thất bại cho platform: $platform"
+        return 1
+    fi
 }
 
 # Show build results
