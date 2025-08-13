@@ -33,8 +33,8 @@ function App() {
     } catch (error) {
       console.error('Failed to load workspace:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load workspace',
+        title: 'Lỗi',
+        description: 'Không thể tải thư mục làm việc',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -51,8 +51,8 @@ function App() {
     } catch (error) {
       console.error('Failed to load files:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load files',
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách tệp',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -64,8 +64,8 @@ function App() {
     setWorkspace(workspacePath);
     await loadFiles(workspacePath);
     toast({
-      title: 'Success',
-      description: `Workspace set to: ${workspacePath}`,
+      title: 'Thành công',
+      description: `Đã đặt thư mục làm việc tại: ${workspacePath}`,
       status: 'success',
       duration: 3000,
       isClosable: true,
@@ -86,8 +86,8 @@ function App() {
     } catch (error) {
       console.error('Failed to read file:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to read file',
+        title: 'Lỗi',
+        description: 'Không thể đọc tệp',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -99,8 +99,8 @@ function App() {
     try {
       await window.electron.deleteFile(file.path, true);
       toast({
-        title: 'Success',
-        description: `File deleted: ${file.name}`,
+        title: 'Thành công',
+        description: `Đã xóa tệp: ${file.name}`,
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -111,8 +111,8 @@ function App() {
     } catch (error) {
       console.error('Failed to delete file:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete file',
+        title: 'Lỗi',
+        description: 'Không thể xóa tệp',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -126,8 +126,8 @@ function App() {
     } catch (error) {
       console.error('Failed to open file:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to open file',
+        title: 'Lỗi',
+        description: 'Không thể mở tệp',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -144,8 +144,8 @@ function App() {
         const newName = name !== editingFile.name ? name : undefined;
         await window.electron.updateFile(editingFile.path, newName, content);
         toast({
-          title: 'Success',
-          description: `File updated: ${name}`,
+          title: 'Thành công',
+          description: `Đã cập nhật tệp: ${name}`,
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -154,8 +154,8 @@ function App() {
         // Create new file
         await window.electron.createFile(workspace, name, content);
         toast({
-          title: 'Success',
-          description: `File created: ${name}`,
+          title: 'Thành công',
+          description: `Đã tạo tệp: ${name}`,
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -168,8 +168,8 @@ function App() {
     } catch (error) {
       console.error('Failed to save file:', error);
       toast({
-        title: 'Error',
-        description: `Failed to save file: ${error}`,
+        title: 'Lỗi',
+        description: `Không thể lưu tệp: ${error}`,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -202,14 +202,14 @@ function App() {
       <VStack spacing={6} align="stretch">
         <HStack justify="space-between">
           <Box>
-            <Heading size="lg">HTML File Manager</Heading>
+            <Heading size="lg">Trình quản lý tệp HTML</Heading>
             <Text color="gray.600" fontSize="sm" mt={1}>
-              Workspace: {workspace}
+              Thư mục làm việc: {workspace}
             </Text>
           </Box>
           <HStack>
             <Button colorScheme="blue" onClick={handleNewFile}>
-              New File
+              Tệp mới
             </Button>
             <WorkspacePicker onWorkspaceSelect={handleWorkspaceSelect} isButton />
           </HStack>

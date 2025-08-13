@@ -55,17 +55,17 @@ function createWindow(): void {
 function createMenu(): void {
   const template: Electron.MenuItemConstructorOptions[] = [
     {
-      label: 'File',
+      label: 'Tệp',
       submenu: [
         {
-          label: 'New File',
+          label: 'Tệp mới',
           accelerator: 'CmdOrCtrl+N',
           click: () => {
             mainWindow.webContents.send('menu-new-file');
           },
         },
         {
-          label: 'Choose Workspace',
+          label: 'Chọn thư mục làm việc',
           accelerator: 'CmdOrCtrl+O',
           click: async () => {
             await handleChooseWorkspace();
@@ -73,7 +73,7 @@ function createMenu(): void {
         },
         { type: 'separator' },
         {
-          label: 'Quit',
+          label: 'Thoát',
           accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
           click: () => {
             app.quit();
@@ -82,16 +82,16 @@ function createMenu(): void {
       ],
     },
     {
-      label: 'Edit',
+      label: 'Chỉnh sửa',
       submenu: [
-        { label: 'Undo', accelerator: 'CmdOrCtrl+Z', role: 'undo' },
-        { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', role: 'redo' },
+        { label: 'Hoàn tác', accelerator: 'CmdOrCtrl+Z', role: 'undo' },
+        { label: 'Làm lại', accelerator: 'Shift+CmdOrCtrl+Z', role: 'redo' },
         { type: 'separator' },
-        { label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' },
-        { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
-        { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
+        { label: 'Cắt', accelerator: 'CmdOrCtrl+X', role: 'cut' },
+        { label: 'Sao chép', accelerator: 'CmdOrCtrl+C', role: 'copy' },
+        { label: 'Dán', accelerator: 'CmdOrCtrl+V', role: 'paste' },
         { type: 'separator' },
-        { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectAll' },
+        { label: 'Chọn tất cả', accelerator: 'CmdOrCtrl+A', role: 'selectAll' },
       ],
     },
   ];
@@ -103,7 +103,7 @@ function createMenu(): void {
 async function handleChooseWorkspace(): Promise<string | null> {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
-    title: 'Choose Workspace Directory',
+    title: 'Chọn thư mục làm việc',
   });
 
   if (result.canceled || result.filePaths.length === 0) {
@@ -117,7 +117,7 @@ async function handleChooseWorkspace(): Promise<string | null> {
     await saveWorkspace(selectedPath);
     return selectedPath;
   } catch (error) {
-    await dialog.showErrorBox('Error', `Cannot use selected directory: ${error}`);
+    await dialog.showErrorBox('Lỗi', `Không thể sử dụng thư mục đã chọn: ${error}`);
     return null;
   }
 }

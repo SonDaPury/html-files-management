@@ -25,8 +25,8 @@ function WorkspacePicker({ onWorkspaceSelect, isButton = false }: WorkspacePicke
     } catch (error) {
       console.error('Failed to choose workspace:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to choose workspace',
+        title: 'Lỗi',
+        description: 'Không thể chọn thư mục làm việc',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -37,7 +37,7 @@ function WorkspacePicker({ onWorkspaceSelect, isButton = false }: WorkspacePicke
   if (isButton) {
     return (
       <Button variant="outline" onClick={handleChooseWorkspace}>
-        Change Workspace
+        Đổi thư mục làm việc
       </Button>
     );
   }
@@ -47,10 +47,10 @@ function WorkspacePicker({ onWorkspaceSelect, isButton = false }: WorkspacePicke
       <VStack spacing={6}>
         <Box>
           <Heading size="xl" mb={2}>
-            HTML File Manager
+            Trình quản lý tệp HTML
           </Heading>
           <Text color="gray.600">
-            Choose a workspace directory to get started
+            Chọn thư mục làm việc để bắt đầu
           </Text>
         </Box>
         
@@ -59,12 +59,12 @@ function WorkspacePicker({ onWorkspaceSelect, isButton = false }: WorkspacePicke
           size="lg"
           onClick={handleChooseWorkspace}
         >
-          Choose Workspace
+          Chọn thư mục làm việc
         </Button>
         
         <Text fontSize="sm" color="gray.500" maxW="md">
-          Select a folder where you want to manage your HTML files. 
-          The app will only access files within this directory.
+          Chọn thư mục mà bạn muốn quản lý các tệp HTML. 
+          Ứng dụng chỉ truy cập các tệp trong thư mục này.
         </Text>
       </VStack>
     </Box>

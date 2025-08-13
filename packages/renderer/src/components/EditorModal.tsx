@@ -44,7 +44,7 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
       } else {
         // Creating new file
         setName('');
-        setContent('<!DOCTYPE html>\n<html>\n<head>\n    <title>New HTML File</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>');
+        setContent('<!DOCTYPE html>\n<html>\n<head>\n    <title>Tệp HTML mới</title>\n</head>\n<body>\n    <h1>Xin chào thế giới!</h1>\n</body>\n</html>');
       }
       setNameError('');
       setContentError('');
@@ -55,17 +55,17 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
     let isValid = true;
 
     if (!name.trim()) {
-      setNameError('File name is required');
+      setNameError('Tên tệp là bắt buộc');
       isValid = false;
     } else if (!/^[A-Za-z0-9._-]+$/.test(name.trim())) {
-      setNameError('File name can only contain letters, numbers, dots, underscores, and hyphens');
+      setNameError('Tên tệp chỉ có thể chứa chữ cái, số, dấu chấm, gạch dưới và gạch ngang');
       isValid = false;
     } else {
       setNameError('');
     }
 
     if (!content.trim()) {
-      setContentError('Content is required');
+      setContentError('Nội dung là bắt buộc');
       isValid = false;
     } else {
       setContentError('');
@@ -94,9 +94,9 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
     
     const hasChanges = file
       ? name !== file.name.replace('.html', '') || content !== (file as any).content
-      : name.trim() !== '' || content !== '<!DOCTYPE html>\n<html>\n<head>\n    <title>New HTML File</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>';
+      : name.trim() !== '' || content !== '<!DOCTYPE html>\n<html>\n<head>\n    <title>Tệp HTML mới</title>\n</head>\n<body>\n    <h1>Xin chào thế giới!</h1>\n</body>\n</html>';
     
-    if (hasChanges && !window.confirm('You have unsaved changes. Are you sure you want to close?')) {
+    if (hasChanges && !window.confirm('Bạn có thay đổi chưa được lưu. Bạn có chắc chắn muốn đóng?')) {
       return;
     }
     
@@ -117,27 +117,27 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
       <ModalOverlay />
       <ModalContent maxW="90vw" maxH="90vh">
         <ModalHeader>
-          {file ? `Edit ${file.name}` : 'Create New HTML File'}
+          {file ? `Chỉnh sửa ${file.name}` : 'Tạo tệp HTML mới'}
         </ModalHeader>
         <ModalCloseButton isDisabled={saving} />
         <ModalBody>
           <VStack spacing={4} align="stretch" onKeyDown={handleKeyDown}>
             <FormControl isInvalid={!!nameError}>
-              <FormLabel>File Name</FormLabel>
+              <FormLabel>Tên tệp</FormLabel>
               <Input
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
                   if (nameError) setNameError('');
                 }}
-                placeholder="Enter file name (without .html extension)"
+                placeholder="Nhập tên tệp (không có phần mở rộng .html)"
                 isDisabled={saving}
               />
               <FormErrorMessage>{nameError}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={!!contentError} flex="1">
-              <FormLabel>Content</FormLabel>
+              <FormLabel>Nội dung</FormLabel>
               <Box
                 border="1px solid"
                 borderColor={contentError ? 'red.300' : 'gray.200'}
@@ -173,15 +173,15 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
         <ModalFooter>
           <HStack spacing={3}>
             <Button variant="ghost" onClick={handleClose} isDisabled={saving}>
-              Cancel
+              Hủy
             </Button>
             <Button
               colorScheme="blue"
               onClick={handleSave}
               isLoading={saving}
-              loadingText="Saving..."
+              loadingText="Đang lưu..."
             >
-              Save (Ctrl+S)
+              Lưu (Ctrl+S)
             </Button>
           </HStack>
         </ModalFooter>

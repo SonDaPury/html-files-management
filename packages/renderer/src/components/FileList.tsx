@@ -77,10 +77,10 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
     return (
       <Box textAlign="center" py={8}>
         <Text color="gray.500" fontSize="lg">
-          No HTML files found in this workspace
+          Không tìm thấy tệp HTML nào trong thư mục làm việc này
         </Text>
         <Text color="gray.400" fontSize="sm" mt={2}>
-          Click "New File" to create your first HTML file
+          Nhấn "Tệp mới" để tạo tệp HTML đầu tiên của bạn
         </Text>
       </Box>
     );
@@ -90,7 +90,7 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
     <VStack spacing={4} align="stretch">
       <HStack spacing={4}>
         <Input
-          placeholder="Search files..."
+          placeholder="Tìm kiếm tệp..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           maxW="300px"
@@ -104,10 +104,10 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
           }}
           maxW="200px"
         >
-          <option value="name-asc">Name (A-Z)</option>
-          <option value="name-desc">Name (Z-A)</option>
-          <option value="mtime-desc">Newest first</option>
-          <option value="mtime-asc">Oldest first</option>
+          <option value="name-asc">Tên (A-Z)</option>
+          <option value="name-desc">Tên (Z-A)</option>
+          <option value="mtime-desc">Mới nhất trước</option>
+          <option value="mtime-asc">Cũ nhất trước</option>
         </Select>
       </HStack>
 
@@ -126,27 +126,27 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
                 onClick={() => handleSortChange('name')}
                 _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
               >
-                File Name
+                Tên tệp
                 {sortBy === 'name' && (
                   <Badge ml={2} fontSize="xs">
                     {sortOrder === 'asc' ? '↑' : '↓'}
                   </Badge>
                 )}
               </Th>
-              <Th>Size</Th>
+              <Th>Kích thước</Th>
               <Th
                 cursor="pointer"
                 onClick={() => handleSortChange('mtime')}
                 _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
               >
-                Modified
+                Đã sửa đổi
                 {sortBy === 'mtime' && (
                   <Badge ml={2} fontSize="xs">
                     {sortOrder === 'asc' ? '↑' : '↓'}
                   </Badge>
                 )}
               </Th>
-              <Th width="120px">Actions</Th>
+              <Th width="120px">Hành động</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -171,27 +171,27 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
                 <Td>
                   <HStack spacing={1}>
                     <IconButton
-                      aria-label="Open file"
+                      aria-label="Mở tệp"
                       icon={<ExternalLinkIcon />}
                       size="sm"
                       variant="ghost"
                       onClick={() => onOpen(file)}
                     />
                     <IconButton
-                      aria-label="Edit file"
+                      aria-label="Chỉnh sửa tệp"
                       icon={<EditIcon />}
                       size="sm"
                       variant="ghost"
                       onClick={() => onEdit(file)}
                     />
                     <IconButton
-                      aria-label="Delete file"
+                      aria-label="Xóa tệp"
                       icon={<DeleteIcon />}
                       size="sm"
                       variant="ghost"
                       colorScheme="red"
                       onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete "${file.name}"?`)) {
+                        if (window.confirm(`Bạn có chắc chắn muốn xóa "${file.name}"?`)) {
                           onDelete(file);
                         }
                       }}
@@ -205,8 +205,8 @@ function FileList({ files, onEdit, onDelete, onOpen }: FileListProps) {
       </Box>
 
       <Text fontSize="sm" color="gray.500">
-        {filteredAndSortedFiles.length} of {files.length} files
-        {searchTerm && ` matching "${searchTerm}"`}
+        {filteredAndSortedFiles.length} trong tổng số {files.length} tệp
+        {searchTerm && ` khớp với "${searchTerm}"`}
       </Text>
     </VStack>
   );
