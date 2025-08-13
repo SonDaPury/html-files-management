@@ -12,11 +12,12 @@ import {
   FormLabel,
   FormErrorMessage,
   Input,
-  Textarea,
   VStack,
   HStack,
   useToast,
+  Box,
 } from '@chakra-ui/react';
+import Editor from '@monaco-editor/react';
 import { FileItem } from '../types';
 
 interface EditorModalProps {
@@ -134,15 +135,30 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
 
             <FormControl isInvalid={!!contentError} flex="1">
               <FormLabel>Content</FormLabel>
-              <Textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Enter HTML content..."
-                minH="400px"
-                fontFamily="mono"
-                fontSize="sm"
-                isDisabled={saving}
-              />
+              <Box
+                border="1px solid"
+                borderColor={contentError ? 'red.300' : 'gray.200'}
+                borderRadius="md"
+                overflow="hidden"
+                height="400px"
+              >
+                <Editor
+                  height="400px"
+                  language="html"
+                  value={content}
+                  onChange={(value) => setContent(value || '')}
+                  theme="vs-dark"
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                    fontSize: 14,
+                    tabSize: 2,
+                    readOnly: saving,
+                  }}
+                />
+              </Box>
               <FormErrorMessage>{contentError}</FormErrorMessage>
             </FormControl>
           </VStack>
