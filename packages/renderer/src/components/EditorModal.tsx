@@ -126,7 +126,10 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
               <FormLabel>File Name</FormLabel>
               <Input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError('');
+                }}
                 placeholder="Enter file name (without .html extension)"
                 isDisabled={saving}
               />
@@ -146,7 +149,10 @@ function EditorModal({ isOpen, onClose, onSave, file }: EditorModalProps) {
                   height="400px"
                   language="html"
                   value={content}
-                  onChange={(value) => setContent(value || '')}
+                  onChange={(value) => {
+                    setContent(value || '');
+                    if (contentError) setContentError('');
+                  }}
                   theme="vs-dark"
                   options={{
                     minimap: { enabled: false },
