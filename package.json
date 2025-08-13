@@ -5,7 +5,7 @@
   "main": "dist/main/index.js",
   "homepage": "./",
   "scripts": {
-    "dev": "concurrently \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\" \"npm run dev:electron\"",
+    "dev": "npm run build && concurrently --kill-others --kill-others-on-fail \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\" \"npm run dev:electron\"",
     "dev:main": "tsc -p packages/main/tsconfig.json --watch",
     "dev:preload": "tsc -p packages/preload/tsconfig.json --watch",
     "dev:renderer": "vite packages/renderer --port 3000",

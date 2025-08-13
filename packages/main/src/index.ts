@@ -202,8 +202,13 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  app.quit();
+});
+
+app.on('before-quit', () => {
+  // Force quit all processes in development
+  if (isDev) {
+    process.exit(0);
   }
 });
 
@@ -211,3 +216,14 @@ app.on('window-all-closed', () => {
 if (isDev) {
   app.commandLine.appendSwitch('ignore-certificate-errors');
 }
+
+// Cleanup on process termination
+process.on('SIGINT', () => {
+  console.log('Received SIGINT, shutting down gracefully');
+  app.quit();
+});
+
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM, shutting down gracefully');
+  app.quit();
+});
